@@ -28,4 +28,10 @@ router.delete("/api/blogs/:id", async (req, res) => {
   res.status(204).end()
 })
 
+router.put("/api/blogs/:id", async (req, res) => {
+  req.blog.likes = req.body.likes + 1
+  await req.blog.save()
+  res.json(req.blog)
+})
+
 module.exports = router
