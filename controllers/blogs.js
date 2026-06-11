@@ -10,27 +10,28 @@ const blogFinder = async (req, res, next) => {
   next()
 }
 
-router.get("/api/blogs", async (req, res) => {
+router.get("/", async (req, res) => {
   const blogs = await Blog.findAll()
 
   console.log(JSON.stringify(blogs))
   res.json(blogs)
 })
 
-router.post("/api/blogs", async (req, res) => {
+router.post("/", async (req, res) => {
   console.log(req.body)
   const blog = await Blog.create({ ...req.body })
   res.json(blog)
 })
 
-router.delete("/api/blogs/:id", async (req, res) => {
+router.delete("/:id", blogFinder, async (req, res) => {
   await Blog.destroy({ where: { id: req.params.id } })
   res.status(204).end()
 })
 
-router.put("/api/blogs/:id", async (req, res) => {
+router.put("/:id", blogFinder, async (req, res) => {
   req.blog.likes = req.body.likes + 1
   await req.blog.save()
+  console.log("like added!")
   res.json(req.blog)
 })
 
