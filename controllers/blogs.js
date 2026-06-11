@@ -1,5 +1,5 @@
 const router = require("express").Router()
-
+const { application } = require("express")
 const { Blog } = require("../models")
 
 const blogFinder = async (req, res, next) => {
@@ -10,6 +10,17 @@ const blogFinder = async (req, res, next) => {
   next()
 }
 
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message)
+
+  if (error.name === "SequelizeValidationError") {
+    return res.status(400).json({ error: error.message })
+  }
+  return res.status(500).json({ error: error.message })
+
+  next(error)
+}
+
 router.get("/", async (req, res) => {
   const blogs = await Blog.findAll()
 
@@ -17,10 +28,13 @@ router.get("/", async (req, res) => {
   res.json(blogs)
 })
 
-router.post("/", async (req, res) => {
-  console.log(req.body)
-  const blog = await Blog.create({ ...req.body })
-  res.json(blog)
+router.post("/", async (req, res, next) => {
+  try {
+    const blog = await Blog.create({ ...req.body })
+    res.json(blog)
+  } catch (error) {
+    next(error)
+  }
 })
 
 router.delete("/:id", blogFinder, async (req, res) => {
@@ -28,11 +42,17 @@ router.delete("/:id", blogFinder, async (req, res) => {
   res.status(204).end()
 })
 
-router.put("/:id", blogFinder, async (req, res) => {
-  req.blog.likes = req.body.likes + 1
-  await req.blog.save()
-  console.log("like added!")
-  res.json(req.blog)
+router.put("/:id", blogFinder, async (req, res, next) => {
+  try {
+    req.blog.likes = req.body.likes + 1
+    await req.blog.save()
+    console.log("like added!")
+    res.json(req.blog)
+  } catch (error) {
+    next(error)
+  }
 })
+
+router.use(errorHandler)
 
 module.exports = router
