@@ -22,10 +22,13 @@ const errorHandler = (error, req, res, next) => {
 }
 
 router.get("/", async (req, res) => {
-  const blogs = await Blog.findAll()
-
-  console.log(JSON.stringify(blogs))
-  res.json(blogs)
+  try {
+    const blogs = await Blog.findAll()
+    console.log(blogs)
+    res.json(blogs)
+  } catch (error) {
+    return res.status(400).json({ error })
+  }
 })
 
 router.post("/", async (req, res, next) => {
@@ -38,7 +41,7 @@ router.post("/", async (req, res, next) => {
 })
 
 router.delete("/:id", blogFinder, async (req, res) => {
-  await Blog.destroy({ where: { id: req.params.id } })
+  await req.blog.destroy({ where: { id: req.params.id } })
   res.status(204).end()
 })
 
