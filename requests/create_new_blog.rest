@@ -1,8 +1,9 @@
 post http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer 
 
 {
-    "title": "Luontokuvaajan mietteitä",
-    "author": "Ari Korhonen",
-    "url": "luontokuvaajanmietteita.fi"
+    "title": "Testi blogi",
+    "author": "Teemu Testaaja",
+    "url": "testiblogi.fi"
 }
