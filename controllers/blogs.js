@@ -59,14 +59,22 @@ router.post("/", tokenExtractor, async (req, res, next) => {
   }
 })
 
-router.delete("/:id", blogFinder, async (req, res) => {
-  await req.blog.destroy({ where: { id: req.params.id } })
-  res.status(204).end()
+router.delete("/:id", blogFinder, tokenExtractor, async (req, res) => {
+  const user = await User.findByPk(req.decodedToken.id)
+  if (req.blog) {
+    if (user.id === req.blog.userId) {
+      await req.blog.destroy()
+      console.log("blog deleted")
+      res.status(204).end()
+    } else {
+      return res.status(401).json({ error: "token invalid" })
+    }
+  }
 })
 
 router.put("/:id", blogFinder, async (req, res, next) => {
   try {
-    req.blog.likes = req.body.likes + 1
+    req.blog.likes = req.blog.likes + 1
     await req.blog.save()
     console.log("like added!")
     res.json(req.blog)
