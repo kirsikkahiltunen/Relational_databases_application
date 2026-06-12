@@ -1,12 +1,10 @@
 const router = require("express").Router()
+const { User } = require("../models")
+const { Blog } = require("../models")
 const { sequelize } = require("../util/db")
 
-router.get("/", async (req, res) => {
-  res.status(200).end()
-})
-
-router.post("/api/reset", async (req, res) => {
-  await sequelize.destroyAll()
+router.post("/reset", async (req, res) => {
+  await sequelize.truncate({ cascade: true, restartIdentity: true })
   res.status(204).end()
 })
 

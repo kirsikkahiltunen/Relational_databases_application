@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const router = require("express").Router()
 
@@ -14,7 +15,7 @@ router.post("/", async (req, res) => {
     },
   })
 
-  const passwordCorrect = body.password === "salaista"
+  const passwordCorrect = await bcrypt.compare(body.password, user.passwordHash)
 
   if (!(user && passwordCorrect)) {
     return response.status(401).json({

@@ -2,6 +2,7 @@ post http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-    "name": "Teemu Testaaja",
-    "username": "teemu.testaaja@testi.fi"
+    "name": "uusi käyttäjä",
+    "username": "new.user@testi.fi",
+    "password": "salaista"
 }

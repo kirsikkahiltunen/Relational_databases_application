@@ -98,7 +98,7 @@ router.delete("/:id", blogFinder, tokenExtractor, async (req, res) => {
 
 router.put("/:id", blogFinder, async (req, res, next) => {
   try {
-    req.blog.likes = req.blog.likes + 1
+    req.blog.likes = req.body.likes
     await req.blog.save()
     console.log("like added!")
     res.json(req.blog)
