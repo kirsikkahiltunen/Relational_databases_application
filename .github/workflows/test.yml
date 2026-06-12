@@ -38,10 +38,10 @@ jobs:
 
       - name: wait for postgres
         run: |
-        until pg_isready -h localhost -p 5432; do 
-          echo "waiting for db..."
-          sleep 5
-        done
+          until pg_isready -h localhost -p 5432; do 
+            echo "waiting for db..."
+            sleep 5
+          done
 
       - name: Start application
         run: npm start > app.log 2>&1 &
