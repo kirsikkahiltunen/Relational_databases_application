@@ -4,7 +4,7 @@
   "description": "",
   "main": "cli.js",
   "scripts": {
-    "start": "TESTING=true node index.js",
+    "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "TESTING=true node --test --test-concurrency=1 tests/api_ch3.test.js",
     "start:test": "TESTING=true node index.js"
