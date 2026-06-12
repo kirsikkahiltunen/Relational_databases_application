@@ -36,6 +36,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: wait for postgres
+        run: |
+        until pg_isready -h localhost -p 5432; do 
+          echo "waiting for db..."
+          sleep 5
+        done
+
       - name: Start application
         run: npm start > app.log 2>&1 &
         env:
