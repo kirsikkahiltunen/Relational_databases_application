@@ -1,5 +1,6 @@
 const router = require("express").Router()
 const { User } = require("../models")
+const { Blog } = require("../models")
 
 const errorHandler = (error, req, res, next) => {
   console.error(error.message)
@@ -20,7 +21,11 @@ const errorHandler = (error, req, res, next) => {
 }
 
 router.get("/", async (req, res) => {
-  const users = await User.findAll()
+  const users = await User.findAll({
+    include: {
+      model: Blog,
+    },
+  })
   res.json(users)
 })
 
