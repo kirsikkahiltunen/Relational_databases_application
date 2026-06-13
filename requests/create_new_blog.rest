@@ -1,6 +1,6 @@
-post http://localhost:3003/api/blogs
+post http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJUZXN0X3VzZXIiLCJpYXQiOjE3ODEyNDQ0NjF9.gZyCGLE3QZkd_hrNelHJQ_JBsGWVqYzOuFWfIgNNJD8
+Authorization: Bearer 
 
 {
     "title": "Uusi blogi",
