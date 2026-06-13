@@ -1,6 +1,7 @@
 const router = require("express").Router()
-const { Session } = require("../models")
+const { User, Session } = require("../models")
 const { sequelize } = require("../util/db")
+const { SECRET } = require("../util/config")
 
 const tokenExtractor = (req, res, next) => {
   const authorization = req.get("authorization")
@@ -37,7 +38,7 @@ const validSession = async (req, res, next) => {
 }
 
 router.delete("/", tokenExtractor, validSession, async (req, res) => {
-  await session.destroy()
+  await req.session.destroy()
   res.status(204).end()
 })
 

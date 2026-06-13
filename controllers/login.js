@@ -1,9 +1,8 @@
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const router = require("express").Router()
-
 const { SECRET } = require("../util/config")
-const { User, Session } = require("../models")
+const { User, Blog, Session } = require("../models")
 const { response } = require("express")
 
 router.post("/", async (req, res) => {
@@ -35,7 +34,7 @@ router.post("/", async (req, res) => {
     }
     const token = jwt.sign(userToken, SECRET)
     const session = await Session.create({ token, userId: user.id })
-    res.status(200).send(session)
+    res.status(200).send(session.token)
   } else {
     res.status(403).json({ error: "user disabled" }).end()
   }
