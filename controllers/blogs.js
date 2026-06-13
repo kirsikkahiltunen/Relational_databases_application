@@ -1,6 +1,6 @@
 const router = require("express").Router()
 const { application } = require("express")
-const { Blog, User } = require("../models")
+const { Blog, User, Session } = require("../models")
 const jwt = require("jsonwebtoken")
 const { SECRET } = require("../util/config")
 const { Op } = require("sequelize")
@@ -40,6 +40,21 @@ const tokenExtractor = (req, res, next) => {
   next()
 }
 
+const validSession = async (req, res, next) => {
+  const session = await Session.findOne({
+    where: { userId: req.decodedToken.id },
+  })
+
+  if (!session) {
+    return res.status(401).json({ error: "session expired" })
+  }
+
+  const user = await User.findByPk(req.decodedToken.id)
+  if (user.disabled) {
+    return res.status(401).json({ error: "user disabled" })
+  }
+}
+
 router.get("/", async (req, res) => {
   try {
     const where = {}
@@ -73,7 +88,7 @@ router.get("/", async (req, res) => {
   }
 })
 
-router.post("/", tokenExtractor, async (req, res, next) => {
+router.post("/", tokenExtractor, validSession, async (req, res, next) => {
   try {
     const user = await User.findByPk(req.decodedToken.id)
     const blog = await Blog.create({ ...req.body, userId: user.id })
@@ -83,18 +98,24 @@ router.post("/", tokenExtractor, async (req, res, next) => {
   }
 })
 
-router.delete("/:id", blogFinder, tokenExtractor, async (req, res) => {
-  const user = await User.findByPk(req.decodedToken.id)
-  if (req.blog) {
-    if (user.id === req.blog.userId) {
-      await req.blog.destroy()
-      console.log("blog deleted")
-      res.status(204).end()
-    } else {
-      return res.status(401).json({ error: "token invalid" })
+router.delete(
+  "/:id",
+  blogFinder,
+  tokenExtractor,
+  validSession,
+  async (req, res) => {
+    const user = await User.findByPk(req.decodedToken.id)
+    if (req.blog) {
+      if (user.id === req.blog.userId) {
+        await req.blog.destroy()
+        console.log("blog deleted")
+        res.status(204).end()
+      } else {
+        return res.status(401).json({ error: "token invalid" })
+      }
     }
-  }
-})
+  },
+)
 
 router.put("/:id", blogFinder, async (req, res, next) => {
   try {

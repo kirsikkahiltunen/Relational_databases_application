@@ -19,6 +19,23 @@ const tokenExtractor = (req, res, next) => {
   }
   next()
 }
+const validSession = async (req, res, next) => {
+  const authorization = req.get("authorization")
+  req.token = authorization.substring(7)
+  const session = await Session.findOne({
+    where: { token: req.token },
+  })
+
+  if (!session) {
+    return res.status(401).json({ error: "session expired" })
+  }
+
+  const user = await User.findByPk(req.decodedToken.id)
+  if (user.disabled) {
+    return res.status(401).json({ error: "user disabled" })
+  }
+  next()
+}
 
 router.post("/", async (req, res) => {
   const user = await User.findByPk(req.body.userId)
@@ -38,7 +55,7 @@ router.post("/", async (req, res) => {
   }
 })
 
-router.put("/:id", tokenExtractor, async (req, res) => {
+router.put("/:id", tokenExtractor, validSession, async (req, res) => {
   const reading_list = await ReadingList.findOne({
     where: { id: req.params.id },
   })
