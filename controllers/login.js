@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
     }
     const token = jwt.sign(userToken, SECRET)
     const session = await Session.create({ token, userId: user.id })
-    res.status(200).send(session.token)
+    res.status(200).send({ token, username: user.username, name: user.name })
   } else {
     res.status(403).json({ error: "user disabled" }).end()
   }

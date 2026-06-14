@@ -28,8 +28,10 @@ const tokenExtractor = (req, res, next) => {
   const authorization = req.get("authorization")
   if (authorization) {
     if (authorization.toLowerCase().startsWith("bearer ")) {
+      const token = authorization.substring(7)
       try {
-        req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
+        req.decodedToken = jwt.verify(token, SECRET)
+        req.token = token
       } catch {
         return res.status(401).json({ error: "invalid token" })
       }
@@ -41,8 +43,9 @@ const tokenExtractor = (req, res, next) => {
 }
 
 const validSession = async (req, res, next) => {
-  const authorization = req.get("authorization")
-  req.token = authorization.substring(7)
+  if (!req.token) {
+    return res.status(401).json({ error: "token missing" })
+  }
   const session = await Session.findOne({
     where: { token: req.token },
   })
@@ -52,6 +55,7 @@ const validSession = async (req, res, next) => {
   }
 
   const user = await User.findByPk(req.decodedToken.id)
+
   if (user.disabled) {
     return res.status(401).json({ error: "user disabled" })
   }

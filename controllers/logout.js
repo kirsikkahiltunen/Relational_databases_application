@@ -2,6 +2,7 @@ const router = require("express").Router()
 const { User, Session } = require("../models")
 const { sequelize } = require("../util/db")
 const { SECRET } = require("../util/config")
+const jwt = require("jsonwebtoken")
 
 const tokenExtractor = (req, res, next) => {
   const authorization = req.get("authorization")
@@ -34,6 +35,7 @@ const validSession = async (req, res, next) => {
   if (user.disabled) {
     return res.status(401).json({ error: "user disabled" })
   }
+  req.session = session
   next()
 }
 
